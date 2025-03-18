@@ -1,23 +1,16 @@
 import "dotenv/config";
 import express from "express";
-import mongoose from "mongoose";
 import cors from "cors";
+import connectDB from "./config/db.js";
+import routes from "./routes/index.js";
+import errorHandler from "./middleware/errorHandler.js";
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
-
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
-
-    console.log(`projet connecté à Mongoose: ${conn.connection.host}`);
-  } catch (error) {
-    console.error(`Erreur de connexion à MongoDB: ${error.message}`);
-    process.exit(1);
-  }
-};
+app.use("/api", routes);
+app.use(errorHandler);
 
 app.get("/", (req, res) => {
   res.send("Bienvenue sur KeepConnect API ");
@@ -29,5 +22,5 @@ const startServer = async () => {
     console.log(` Serveur en cours d'exécution sur le port ${port}`);
   });
 };
-
+connectDB();
 startServer();
